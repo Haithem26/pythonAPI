@@ -1,6 +1,11 @@
 from django.db import models
-from django.db.models.base import Model
-from django.db.models.fields import DateField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from django.conf import settings
+from django.contrib.auth.models import User
+
+
 
 # Guest -- Movie -- Reservation
 
@@ -15,3 +20,14 @@ class Guest(models.Model):
 class Reservation(models.Model):
     guest = models.ForeignKey(Guest, related_name='reservation', on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, related_name='reservation', on_delete=models.CASCADE)
+
+class Post(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    body = models.TextField()
+
+#creer un token automatiquement lors de la creation d'un user dans le panel admin
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def TokenCreate(sender, instance, created, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

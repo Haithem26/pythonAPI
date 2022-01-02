@@ -21,6 +21,7 @@ from tickets.views import viewsets_guest, viewsets_movie, viewsets_reservation
 
 from tickets import views
 from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
 router.register('guests', viewsets_guest)
@@ -38,7 +39,7 @@ urlpatterns = [
     #3.2 GET PUT DELETE from rest framework func based view @api_view
     path('rest/fbv/<int:pk>', views.FBV_pk),
 
-     #4.1 GET POST from rest framework class based view APIView
+    #4.1 GET POST from rest framework class based view APIView
     path('rest/cbv/', views.CBV_List.as_view()),
     #4.2 GET PUT DELETE from rest framework class based view APIView
     path('rest/cbv/<int:pk>', views.CBV_pk.as_view()),
@@ -57,6 +58,14 @@ urlpatterns = [
     #8 find movie
     path('fbv/findmovie', views.find_movie),
     #9 New Reservation
-    path('fbv/newreservation', views.new_reservation)
+    path('fbv/newreservation', views.new_reservation),
+    #10 rest auth url
+    path('api-auth',include('rest_framework.urls')),
+    # 11 Token authentication
+    path('api-token-auth', obtain_auth_token),
+    #12 Post pk generics Pos_Pk
+    # path('post/generics', views.Post_list.as_view()),
+     path('post/generics/<int:pk>', views.Post_pk.as_view()),
+
     
 ]

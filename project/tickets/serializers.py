@@ -16,3 +16,8 @@ class GuestSerializer(serializers.ModelSerializer):
         model = Guest
         fields = ['pk', 'reservation', 'name', 'mobile']
         #uuid / slug
+
+class PostSeralizer(serializers.ModelSerializer):
+    class Meta:
+         model = Reservation
+         fields = '__all__'

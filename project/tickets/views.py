@@ -1,11 +1,13 @@
 
 from re import search
+from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.http.response import JsonResponse
+from rest_framework import permissions
 from rest_framework.serializers import Serializer
-from .models import Guest, Movie, Reservation
-from rest_framework.decorators import api_view
-from .serializers import GuestSerializer, MovieSerializer, ReservationSerializer
+from .models import Guest, Movie, Reservation, Post
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from .serializers import GuestSerializer, MovieSerializer, ReservationSerializer, PostSeralizer
 from rest_framework import status, filters
 from rest_framework.response import Response
 
@@ -13,6 +15,10 @@ from rest_framework.views import APIView
 from django.http import Http404
 
 from rest_framework import generics, mixins, viewsets
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsAuthorOrReadOnly
+
 
 
 
@@ -157,10 +163,14 @@ class mixins_pk(mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.Destroy
 class generics_list(generics.ListCreateAPIView):
     queryset= Guest.objects.all()
     serializer_class = GuestSerializer
+    authentication_classes = [TokenAuthentication]
+    #permission_classes= [IsAuthenticated]
 #6.2 get put delete
 class generics_pk(generics.RetrieveUpdateDestroyAPIView):
     queryset= Guest.objects.all()
     serializer_class = GuestSerializer
+    authentication_classes = [TokenAuthentication]
+     #permission_classes= [IsAuthenticated]
 #7 viewsets
 class viewsets_guest(viewsets.ModelViewSet):
     queryset= Guest.objects.all()
@@ -201,3 +211,9 @@ def new_reservation(request):
     reservation.save()
 
     return Response(status=status.HTTP_201_CREATED)
+
+#10 post author editor
+class Post_pk(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = PostSeralizer
